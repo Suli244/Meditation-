@@ -1,6 +1,7 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:meditation/core/image/app_images.dart';
 import 'package:meditation/features/practice/data/model/just_model.dart';
@@ -59,7 +60,10 @@ class _PracticeDetailPageState extends State<PracticeDetailPage> {
       ),
       body: Stack(
         children: [
-          CachedImageWidget(image: widget.model.image),
+          CachedImageWidget(
+            image: widget.model.image,
+            radius: 0,
+          ),
           Center(
             child: _PlayerBody(
               key: _childKey,
@@ -104,13 +108,14 @@ class __PlayerBodyState extends State<_PlayerBody> with WidgetsBindingObserver {
       await _player.setAudioSource(
         AudioSource.uri(
           Uri.parse(
-            "https://s3.amazonaws.com/scifri-episodes/scifri20181123-episode.mp3",
+            "https://filesamples.com/samples/audio/mp3/sample4.mp3",
           ),
         ),
       );
     } catch (e) {
       print("Error loading audio source: $e");
     }
+    _player.play();
   }
 
   @override
@@ -149,50 +154,48 @@ class __PlayerBodyState extends State<_PlayerBody> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          StreamBuilder<PositionData>(
-            stream: _positionDataStream,
-            builder: (context, snapshot) {
-              final positionData = snapshot.data;
-              return PlayerTimeWidget(
-                duration: positionData?.duration ?? Duration.zero,
-                position: positionData?.position ?? Duration.zero,
-              );
-            },
-          ),
-          const SizedBox(height: 24),
-          PlayButtons(_player),
-          const SizedBox(height: 70),
-          MegaTweenAnimations.appearWidget(
-            duration: const Duration(milliseconds: 800),
-            child: SizedBox(
-              height: 50,
-              width: context.width * 0.9,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  _player.pause();
-                },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  backgroundColor: AppColors.color658525,
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        StreamBuilder<PositionData>(
+          stream: _positionDataStream,
+          builder: (context, snapshot) {
+            final positionData = snapshot.data;
+            return PlayerTimeWidget(
+              duration: positionData?.duration ?? Duration.zero,
+              position: positionData?.position ?? Duration.zero,
+            );
+          },
+        ),
+        const SizedBox(height: 24),
+        PlayButtons(_player),
+        const SizedBox(height: 70),
+        MegaTweenAnimations.appearWidget(
+          duration: const Duration(milliseconds: 800),
+          child: SizedBox(
+            height: 50,
+            width: context.width * 0.9,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _player.pause();
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
-                  'Stop Practice',
-                  style:
-                      AppTextStylesMeditation.s18Wbold(color: AppColors.white),
-                  textScaleFactor: FontSizer.textScaleFactor(context),
-                ),
+                backgroundColor: AppColors.color658525,
+              ),
+              child: Text(
+                'Stop Practice',
+                style: AppTextStylesMeditation.s18Wbold(color: AppColors.white),
+                textScaleFactor: FontSizer.textScaleFactor(context),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+        SizedBox(height: 15.h),
+      ],
     );
   }
 }
