@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:meditation/core/premium/premium.dart';
+import 'package:meditation/features/bottom_navigator/bottom_naviator_screen.dart';
 import 'package:meditation/features/useful_tips/logic/tip_model.dart';
 import 'package:meditation/features/useful_tips/tips_detail_page.dart';
 import 'package:meditation/theme/app_colors.dart';
@@ -35,7 +36,21 @@ class _TipsItemWidgetState extends State<TipsItemWidget> {
     return GestureDetector(
       onTap: () {
         if (widget.model.premium && !byPremium) {
-          print('BUY PREMIUM!');
+          Navigator.pushAndRemoveUntil(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  const BottomNavigatorScreen(currindex: 3),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return child;
+              },
+              transitionDuration: const Duration(
+                  seconds:
+                      0), // Устанавливаем продолжительность анимации в 0 секунд
+            ),
+            (route) => false,
+          );
         } else {
           Navigator.push(
             context,

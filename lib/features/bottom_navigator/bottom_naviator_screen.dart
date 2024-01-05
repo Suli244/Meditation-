@@ -7,14 +7,16 @@ import 'package:meditation/features/useful_tips/useful_tips_page.dart';
 import 'package:meditation/theme/app_colors.dart';
 
 class BottomNavigatorScreen extends StatefulWidget {
-  const BottomNavigatorScreen({Key? key}) : super(key: key);
+  const BottomNavigatorScreen({Key? key, this.currindex = 0}) : super(key: key);
+
+  final int currindex;
 
   @override
   State<BottomNavigatorScreen> createState() => _BottomNavigatorState();
 }
 
 class _BottomNavigatorState extends State<BottomNavigatorScreen> {
-  int index = 0;
+  late int index = widget.currindex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
