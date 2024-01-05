@@ -7,9 +7,11 @@ class CachedImageWidget extends StatelessWidget {
   const CachedImageWidget({
     super.key,
     required this.image,
+    this.radius = 8,
   });
 
   final String image;
+  final double radius;
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +21,8 @@ class CachedImageWidget extends StatelessWidget {
       memCacheHeight: 400,
       imageBuilder: (context, imageProvider) => Container(
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(8),
+          borderRadius: BorderRadius.all(
+            Radius.circular(radius),
           ),
           image: DecorationImage(
             image: imageProvider,
