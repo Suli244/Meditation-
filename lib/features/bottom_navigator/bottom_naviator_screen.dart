@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meditation/core/image/app_images.dart';
 import 'package:meditation/features/home/home_page.dart';
-import 'package:meditation/features/practice/practice_page.dart';
+import 'package:meditation/features/practice/presentation/practice_page.dart';
 import 'package:meditation/features/settings/settings_page.dart';
 import 'package:meditation/features/useful_tips/useful_tips_page.dart';
 import 'package:meditation/theme/app_colors.dart';
