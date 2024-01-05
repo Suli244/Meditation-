@@ -40,7 +40,7 @@ class _SplashScreenState extends State<SplashScreen> {
   goTo() async {
     await Future.delayed(const Duration(milliseconds: 1450));
     final isFirst = await FirstOpenMeditation.getFirstOpen();
-    if (isFirst) {
+    if (!isFirst) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
