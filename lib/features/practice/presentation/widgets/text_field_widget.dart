@@ -8,6 +8,7 @@ final class TextFieldWidget extends StatelessWidget {
     super.key,
     required this.controller,
     required this.labelText,
+    required this.onChanged,
     this.hintText,
     this.suffix,
   });
@@ -16,6 +17,7 @@ final class TextFieldWidget extends StatelessWidget {
   final String? hintText;
   final TextEditingController controller;
   final Widget? suffix;
+  final Function(String value) onChanged;
 
   OutlineInputBorder get _border => OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
@@ -28,6 +30,7 @@ final class TextFieldWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onChanged: onChanged,
       controller: controller,
       onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
       decoration: InputDecoration(
