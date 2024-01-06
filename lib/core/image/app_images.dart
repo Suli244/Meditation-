@@ -8,6 +8,7 @@
 class AppImages {
   AppImages._();
   
+  static const String arrowIcon = 'assets/images/arrow_icon.png';  
   static const String ellipsisIcon = 'assets/images/ellipsis_icon.png';  
   static const String headphoneIcon = 'assets/images/headphone_icon.png';  
   static const String heartBoldIcon = 'assets/images/heart_bold_icon.png';  
@@ -29,6 +30,7 @@ class AppImages {
   static const String starFullIcon = 'assets/images/star_full_icon.png';  
   static const String starIcon = 'assets/images/star_icon.png';  
   static const String usefulTipsIcon = 'assets/images/useful_tips_icon.png';  
+  static const String valumeIcon = 'assets/images/valume_icon.png';  
   static const String vectorBottomIcon = 'assets/images/vector_bottom_icon.png';  
   static const String vectorLeftIcon = 'assets/images/vector_left_icon.png';  
   static const String vectorRightIcon = 'assets/images/vector_right_icon.png';  
