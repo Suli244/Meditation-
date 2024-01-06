@@ -107,16 +107,6 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
 
   void setVolume(double value) => _player.setVolume(value);
 
-  void playNext() {
-    currentIndex++;
-    if (currentIndex < widget.model.length) {
-      _player.seek(Duration.zero, index: currentIndex);
-      _player.play();
-    } else {
-      // Handle when there are no more tracks
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -207,25 +197,7 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
                     ),
                   ),
                 ),
-                const SizedBox(height: 15),
-                // Next button
-                ElevatedButton(
-                  onPressed: playNext,
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    backgroundColor: AppColors.color658525,
-                  ),
-                  child: Text(
-                    'Next',
-                    style: AppTextStylesMeditation.s18Wbold(
-                      color: AppColors.white,
-                    ),
-                    textScaleFactor: FontSizer.textScaleFactor(context),
-                  ),
-                ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
               ],
             ),
           ),
