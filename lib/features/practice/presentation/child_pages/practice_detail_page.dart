@@ -22,11 +22,11 @@ class PracticeDetailPage extends StatefulWidget {
   const PracticeDetailPage({
     Key? key,
     required this.model,
-    required this.initialIndex,
+    required this.index,
   }) : super(key: key);
 
   final List<PracticeModel> model;
-  final int initialIndex;
+  final int index;
 
   @override
   State<PracticeDetailPage> createState() => _PracticeDetailPageState();
@@ -42,7 +42,7 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex;
+    currentIndex = widget.index;
     _playlist = ConcatenatingAudioSource(
       children: widget.model
           .map(
@@ -75,7 +75,7 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-    _player.play();
+    await _player.play();
   }
 
   @override
@@ -106,6 +106,16 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
       );
 
   void setVolume(double value) => _player.setVolume(value);
+
+  void playNext() {
+    currentIndex++;
+    if (currentIndex < widget.model.length) {
+      _player.seek(Duration.zero, index: currentIndex);
+      _player.play();
+    } else {
+      // Handle when there are no more tracks
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +175,11 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
                   },
                 ),
                 const SizedBox(height: 24),
-                PlayButtons(_player),
+                PlayButtons(
+                  _player,
+                  prevTap: () {},
+                  nextTap: () {},
+                ),
                 const SizedBox(height: 70),
                 MegaTweenAnimations.appearWidget(
                   duration: const Duration(milliseconds: 800),
@@ -191,6 +205,24 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
                         textScaleFactor: FontSizer.textScaleFactor(context),
                       ),
                     ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                // Next button
+                ElevatedButton(
+                  onPressed: playNext,
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    backgroundColor: AppColors.color658525,
+                  ),
+                  child: Text(
+                    'Next',
+                    style: AppTextStylesMeditation.s18Wbold(
+                      color: AppColors.white,
+                    ),
+                    textScaleFactor: FontSizer.textScaleFactor(context),
                   ),
                 ),
                 const SizedBox(height: 15),

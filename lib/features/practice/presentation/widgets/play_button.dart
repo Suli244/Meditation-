@@ -8,8 +8,15 @@ import 'package:meditation/features/practice/presentation/widgets/mega_text_anim
 import 'package:meditation/theme/app_colors.dart';
 
 class PlayButtons extends StatelessWidget {
+  const PlayButtons(
+    this.player, {
+    Key? key,
+    required this.nextTap,
+    required this.prevTap,
+  }) : super(key: key);
   final AudioPlayer player;
-  const PlayButtons(this.player, {Key? key}) : super(key: key);
+  final VoidCallback nextTap;
+  final VoidCallback prevTap;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +32,12 @@ class PlayButtons extends StatelessWidget {
                 Icons.skip_previous,
                 color: AppColors.white,
               ),
-              onPressed: player.hasPrevious ? player.seekToPrevious : null,
+              onPressed: () {
+                if (player.hasPrevious) {
+                  prevTap();
+                  player.seekToPrevious();
+                }
+              },
               iconSize: 44.0,
             ),
           ),
@@ -92,6 +104,7 @@ class PlayButtons extends StatelessWidget {
                 ),
                 iconSize: 44.0,
                 onPressed: () {
+                  nextTap();
                   if (player.hasNext && metadata.isPremium) {
                     Navigator.pushAndRemoveUntil(
                       context,
@@ -109,6 +122,7 @@ class PlayButtons extends StatelessWidget {
                       (route) => false,
                     );
                   } else {
+                    nextTap();
                     player.seekToNext();
                   }
                 },
