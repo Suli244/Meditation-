@@ -32,22 +32,28 @@ final class TextFieldWidget extends StatelessWidget {
     return TextFormField(
       onChanged: onChanged,
       controller: controller,
+      cursorColor: AppColors.color658525,
       onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: 16.h,
+          vertical: 24.h,
+        ),
         fillColor: AppColors.white,
         filled: true,
         counterStyle: const TextStyle(color: AppColors.white),
         suffix: suffix,
-        contentPadding: EdgeInsets.symmetric(horizontal: 15.h),
         border: _border,
         enabledBorder: _border,
         focusedBorder: _border,
         focusedErrorBorder: _border,
         errorBorder: _border,
-        labelText: labelText,
+        // labelText: labelText,
         helperText: '',
-        hintStyle: AppTextStylesMeditation.s16W400(fontSize: 15.h),
-        hintText: hintText,
+        hintStyle: AppTextStylesMeditation.s16W400(
+          color: AppColors.color50717C,
+        ),
+        hintText: labelText,
       ),
     );
   }

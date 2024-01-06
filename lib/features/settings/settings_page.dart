@@ -95,7 +95,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     title: 'Restore purchases',
                     bottom: 12,
                   ),
-                // if (!isPremium) Image.asset(AppImages.premiumBanner),
                 if (!isPremium) const PremiumWidgetDateil(),
                 const SizedBox(height: 10),
                 Text(
