@@ -22,11 +22,11 @@ class PracticeDetailPage extends StatefulWidget {
   const PracticeDetailPage({
     Key? key,
     required this.model,
-    required this.initialIndex,
+    required this.index,
   }) : super(key: key);
 
   final List<PracticeModel> model;
-  final int initialIndex;
+  final int index;
 
   @override
   State<PracticeDetailPage> createState() => _PracticeDetailPageState();
@@ -42,7 +42,7 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex;
+    currentIndex = widget.index;
     _playlist = ConcatenatingAudioSource(
       children: widget.model
           .map(
@@ -75,7 +75,7 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
     } catch (e) {
       print("Error loading audio source: $e");
     }
-    _player.play();
+    await _player.play();
   }
 
   @override
@@ -165,7 +165,11 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
                   },
                 ),
                 const SizedBox(height: 24),
-                PlayButtons(_player),
+                PlayButtons(
+                  _player,
+                  prevTap: () {},
+                  nextTap: () {},
+                ),
                 const SizedBox(height: 70),
                 MegaTweenAnimations.appearWidget(
                   duration: const Duration(milliseconds: 800),
@@ -193,7 +197,7 @@ class _PracticeDetailPageState extends State<PracticeDetailPage>
                     ),
                   ),
                 ),
-                const SizedBox(height: 15),
+                const SizedBox(height: 25),
               ],
             ),
           ),
