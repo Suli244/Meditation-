@@ -167,7 +167,7 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                           ),
                     IconButton(
                       onPressed: () {
-                        if (widget.model[pageIndex].premium && !byPremium) {
+                        if (widget.model[pageIndex + 1].premium && !byPremium) {
                           Navigator.pushAndRemoveUntil(
                             context,
                             PageRouteBuilder(
