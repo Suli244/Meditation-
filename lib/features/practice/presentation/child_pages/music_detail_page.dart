@@ -4,14 +4,17 @@ import 'package:just_audio/just_audio.dart';
 import 'package:meditation/core/image/app_images.dart';
 import 'package:meditation/core/premium/premium.dart';
 import 'package:meditation/features/bottom_navigator/bottom_naviator_screen.dart';
+import 'package:meditation/features/practice/data/model/position_data_model.dart';
 import 'package:meditation/features/practice/data/model/practice_model.dart';
 import 'package:meditation/features/practice/presentation/child_pages/page_view_item.dart';
 import 'package:meditation/features/practice/presentation/widgets/app_loading.dart';
 import 'package:meditation/features/practice/presentation/widgets/font_sizer.dart';
 import 'package:meditation/features/practice/presentation/widgets/mega_text_animation.dart';
+import 'package:meditation/features/practice/presentation/widgets/player_timer.dart';
 import 'package:meditation/theme/app_colors.dart';
 import 'package:meditation/theme/app_text_styles.dart';
 import 'package:meditation/widgets/spaces.dart';
+import 'package:rxdart/rxdart.dart';
 
 class MusicDetailPage extends StatefulWidget {
   const MusicDetailPage({
@@ -26,6 +29,7 @@ class MusicDetailPage extends StatefulWidget {
 }
 
 class _MusicDetailPageState extends State<MusicDetailPage> {
+  late AudioPlayer player = AudioPlayer();
   @override
   void initState() {
     getPremium();
@@ -37,7 +41,6 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
   late int pageIndex = widget.currIndex;
   bool isLoad = true;
   bool isPlay = true;
-  late AudioPlayer player;
   bool byPremium = false;
 
   getPremium() async {
@@ -45,19 +48,34 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
     setState(() {});
   }
 
+  Stream<PositionData> get _positionDataStream =>
+      Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+        player.positionStream,
+        player.bufferedPositionStream,
+        player.durationStream,
+        (position, bufferedPosition, duration) => PositionData(
+          position,
+          bufferedPosition,
+          duration ?? Duration.zero,
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           PageView.builder(
-            physics: const ClampingScrollPhysics(),
+            physics: const ClampingScrollPhysics(
+              parent: NeverScrollableScrollPhysics(),
+            ),
             itemCount: widget.model.length,
             controller: controller,
             onPageChanged: (value) {
               pageIndex = value;
             },
             itemBuilder: (context, index) => PageViewItem(
+              player: player,
               model: widget.model[index],
               onLoad: (bool isLoadFrom, AudioPlayer playerFrom) {
                 setState(() {
@@ -87,11 +105,15 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             child: Column(
               children: [
                 if (!isLoad)
-                  Text(
-                    formatDuration(player.duration!.inSeconds),
-                    style: AppTextStylesMeditation.s46W700(
-                      color: Colors.white,
-                    ),
+                  StreamBuilder<PositionData>(
+                    stream: _positionDataStream,
+                    builder: (context, snapshot) {
+                      final positionData = snapshot.data;
+                      return PlayerTimeWidget(
+                        duration: positionData?.duration ?? Duration.zero,
+                        position: positionData?.position ?? Duration.zero,
+                      );
+                    },
                   ),
                 const SizedBox(height: 22),
                 Row(
@@ -116,7 +138,9 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
                       },
                     ),
                     isLoad
-                        ? const AppLoadingWidget()
+                        ? const AppLoadingWidget(
+                            backgroundColor: AppColors.white,
+                          )
                         : GestureDetector(
                             onTap: () {
                               setState(() {

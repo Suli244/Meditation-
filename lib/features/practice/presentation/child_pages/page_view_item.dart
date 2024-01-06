@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
@@ -11,28 +13,34 @@ class PageViewItem extends StatefulWidget {
     super.key,
     required this.model,
     required this.onLoad,
+    required this.player,
   });
   @override
   State<PageViewItem> createState() => _PageViewItemState();
   final PracticeModel model;
+  final AudioPlayer player;
   final Function(bool isLoad, AudioPlayer player) onLoad;
 }
 
 class _PageViewItemState extends State<PageViewItem> {
-  final player = AudioPlayer();
-  final url =
-      'https://commondatastorage.googleapis.com/codeskulptor-demos/DDR_assets/Kangaroo_MusiQue_-_The_Neverwritten_Role_Playing_Game.mp3';
-
+  late AudioPlayer player;
   @override
   void initState() {
-    loadAudio();
+    player = AudioPlayer();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await loadAudio();
+    });
     super.initState();
   }
 
-  loadAudio() async {
-    final duration = await player.setUrl(url);
-    widget.onLoad(false, player);
-    await player.play();
+  Future<void> loadAudio() async {
+    try {
+      await player.setUrl(widget.model.audio);
+      widget.onLoad(false, player);
+      await player.play();
+    } catch (e) {
+      log('data: 1 ');
+    }
   }
 
   @override
