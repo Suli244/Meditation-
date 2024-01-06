@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:meditation/core/image/app_images.dart';
 import 'package:meditation/core/premium/first_open.dart';
 import 'package:meditation/features/bottom_navigator/bottom_naviator_screen.dart';
@@ -40,13 +41,23 @@ class _SplashScreenState extends State<SplashScreen> {
   goTo() async {
     await Future.delayed(const Duration(milliseconds: 1450));
     final isFirst = await FirstOpenMeditation.getFirstOpen();
-    if (!isFirst) {
+    if (isFirst) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const OnBoardingScreen(),
         ),
       );
+      await Future.delayed(const Duration(seconds: 8));
+      try {
+        final InAppReview inAppReview = InAppReview.instance;
+
+        if (await inAppReview.isAvailable()) {
+          inAppReview.requestReview();
+        }
+      } catch (e) {
+        throw Exception(e);
+      }
     } else {
       Navigator.pushReplacement(
         context,

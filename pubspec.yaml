@@ -40,6 +40,7 @@ dependencies:
   shimmer: ^2.0.0
   apphud: ^2.2.6
   webview_flutter: ^4.4.2
+  in_app_review: ^2.0.6
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
