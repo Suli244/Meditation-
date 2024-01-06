@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,7 +7,6 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:meditation/core/icons/my_flutter_app_icons.dart';
 import 'package:meditation/core/premium/premium.dart';
 import 'package:meditation/features/bottom_navigator/bottom_naviator_screen.dart';
-import 'package:meditation/features/practice/data/model/just_model.dart';
 import 'package:meditation/features/practice/data/model/practice_model.dart';
 import 'package:meditation/features/practice/presentation/child_pages/practice_detail_page.dart';
 import 'package:meditation/features/practice/presentation/cubit/practice_cubit.dart';
@@ -15,6 +16,7 @@ import 'package:meditation/features/practice/presentation/widgets/text_field_wid
 import 'package:meditation/theme/app_colors.dart';
 import 'package:meditation/theme/app_text_styles.dart';
 import 'package:meditation/widgets/custom_app_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 
 //TODO: clear after connedted with firebase
@@ -99,7 +101,10 @@ class _PracticePageState extends State<PracticePage> {
                               child: FadeInAnimation(
                                 curve: Curves.fastLinearToSlowEaseIn,
                                 duration: const Duration(milliseconds: 1500),
-                                child: _GritViewItem(model[index]),
+                                child: _GritViewItem(
+                                  index,
+                                  model: model,
+                                ),
                               ),
                             ),
                           ),
@@ -119,11 +124,13 @@ class _PracticePageState extends State<PracticePage> {
 
 final class _GritViewItem extends StatefulWidget {
   const _GritViewItem(
-    this.model, {
+    this.index, {
     Key? key,
+    required this.model,
   }) : super(key: key);
 
-  final PracticeModel model;
+  final int index;
+  final List<PracticeModel> model;
 
   @override
   __GritViewItemState createState() => __GritViewItemState();
@@ -138,6 +145,9 @@ class __GritViewItemState extends State<_GritViewItem> {
     getPremium();
     super.initState();
     heartPositionY = 0;
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await loadfavorite();
+    });
   }
 
   getPremium() async {
@@ -145,11 +155,40 @@ class __GritViewItemState extends State<_GritViewItem> {
     setState(() {});
   }
 
+  List<bool> boolList = <bool>[];
+
+  Future<void> loadfavorite() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    boolList = (prefs.getStringList("userfavorite2") ?? <bool>[])
+        .map((value) => value == 'true')
+        .toList();
+
+    if (boolList.isEmpty) {
+      boolList = List.generate(15, (index) => false).toList();
+    }
+    log('data: boolList: $boolList ');
+    setState(() {});
+  }
+
+  Future<void> saved() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    boolList[widget.index] = !boolList[widget.index];
+    setState(() {});
+    await prefs.setStringList(
+        "userfavorite2", boolList.map((value) => value.toString()).toList());
+    boolList = (prefs.getStringList("userfavorite2") ?? <bool>[])
+        .map((value) => value == 'true')
+        .toList();
+    setState(() {});
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
+    log('data: boolList: ${widget.model.length} ');
     return GestureDetector(
       onTap: () {
-        if (widget.model.premium && !byPremium) {
+        if (widget.model[widget.index].premium && !byPremium) {
           Navigator.pushAndRemoveUntil(
             context,
             PageRouteBuilder(
@@ -170,9 +209,8 @@ class __GritViewItemState extends State<_GritViewItem> {
             context,
             MaterialPageRoute(
               builder: (context) => PracticeDetailPage(
-                model: JustDetailModel(
-                  image: widget.model.image,
-                ),
+                initialIndex: widget.index,
+                model: widget.model,
               ),
             ),
           );
@@ -192,7 +230,7 @@ class __GritViewItemState extends State<_GritViewItem> {
               height: 136,
               child: Stack(
                 children: [
-                  CachedImageWidget(image: widget.model.image),
+                  CachedImageWidget(image: widget.model[widget.index].image),
                   Positioned(
                     right: 5,
                     top: 5,
@@ -217,6 +255,7 @@ class __GritViewItemState extends State<_GritViewItem> {
                           onTap: () {
                             setState(() {
                               heartPositionY = -10;
+                              saved();
                             });
 
                             Future.delayed(const Duration(milliseconds: 800),
@@ -226,16 +265,18 @@ class __GritViewItemState extends State<_GritViewItem> {
                               });
                             });
                           },
-                          child: const Icon(
+                          child: Icon(
                             MyFlutterApp.vector,
                             size: 15,
-                            color: AppColors.colorAADC46,
+                            color: boolList[widget.index]
+                                ? Colors.red
+                                : AppColors.colorAADC46,
                           ),
                         ),
                       ),
                     ),
                   ),
-                  if (widget.model.premium && !byPremium)
+                  if (widget.model[widget.index].premium && !byPremium)
                     Container(
                       height: 178.h,
                       width: double.infinity,
@@ -251,7 +292,7 @@ class __GritViewItemState extends State<_GritViewItem> {
             const Spacer(flex: 3),
             FittedBox(
               child: Text(
-                widget.model.title,
+                widget.model[widget.index].title,
                 style: const TextStyle(
                   color: Color(0xFF092A35),
                   fontSize: 15,
@@ -264,7 +305,7 @@ class __GritViewItemState extends State<_GritViewItem> {
             ),
             const Spacer(flex: 2),
             Text(
-              '${widget.model.time} Minutes',
+              '${widget.model[widget.index].time} Minutes',
               style: const TextStyle(
                 color: Color(0xFF4F707B),
                 fontSize: 12,

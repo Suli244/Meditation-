@@ -2,14 +2,14 @@ class PracticeModel {
   final String time;
   final String title;
   final String image;
-  final String audioLink;
+  final String audio;
   final bool premium;
 
   PracticeModel({
     required this.time,
     required this.image,
     required this.title,
-    required this.audioLink,
+    required this.audio,
     required this.premium,
   });
 
@@ -18,7 +18,7 @@ class PracticeModel {
       time: map['time'] ?? '',
       title: map['title'] ?? '',
       image: map['image'] ?? '',
-      audioLink: map['audioLink'] ?? '',
+      audio: map['audio'] ?? '',
       premium: isPremium,
     );
   }
