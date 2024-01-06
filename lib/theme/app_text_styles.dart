@@ -156,4 +156,10 @@ abstract class AppTextStylesMeditation {
         fontWeight: FontWeight.w600,
         height: 1.20,
       );
+  static TextStyle s46W700({Color? color}) => TextStyle(
+        fontSize: 46,
+        color: color ?? Colors.black,
+        fontFamily: font,
+        fontWeight: FontWeight.w700,
+      );
 }

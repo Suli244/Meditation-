@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:meditation/core/image/app_images.dart';
+import 'package:meditation/core/premium/premium.dart';
+import 'package:meditation/features/bottom_navigator/bottom_naviator_screen.dart';
 import 'package:meditation/features/practice/data/model/practice_model.dart';
 import 'package:meditation/features/practice/presentation/child_pages/page_view_item.dart';
 import 'package:meditation/features/practice/presentation/widgets/app_loading.dart';
@@ -24,12 +26,25 @@ class MusicDetailPage extends StatefulWidget {
 }
 
 class _MusicDetailPageState extends State<MusicDetailPage> {
+  @override
+  void initState() {
+    getPremium();
+    super.initState();
+  }
+
   late final PageController controller =
       PageController(initialPage: widget.currIndex);
   late int pageIndex = widget.currIndex;
   bool isLoad = true;
   bool isPlay = true;
   late AudioPlayer player;
+  bool byPremium = false;
+
+  getPremium() async {
+    byPremium = await PremiumMetitation.getPremium();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,70 +84,99 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
             bottom: 112,
             right: 86.w,
             left: 86.w,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
               children: [
-                IconButton(
-                  icon: Image.asset(
-                    AppImages.skipPreviousIcon,
-                    height: 25,
-                    color: Colors.white,
+                if (!isLoad)
+                  Text(
+                    formatDuration(player.duration!.inSeconds),
+                    style: AppTextStylesMeditation.s46W700(
+                      color: Colors.white,
+                    ),
                   ),
-                  onPressed: () {
-                    if (pageIndex != 0) {
-                      controller.previousPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.ease,
-                      );
-                      setState(() {
-                        isLoad = true;
-                      });
-                    }
-                  },
-                ),
-                isLoad
-                    ? const AppLoadingWidget()
-                    : GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isPlay = !isPlay;
-                            player.pause();
-                          });
-                          if (!isPlay) {
-                            player.pause();
-                          } else {
-                            player.play();
-                          }
-                        },
-                        child: isPlay
-                            ? Image.asset(
-                                AppImages.pauseIcon,
-                                height: 25,
-                                color: Colors.white,
-                              )
-                            : const Icon(
-                                Icons.play_arrow_rounded,
-                                color: Colors.white,
-                                size: 40,
-                              ),
+                const SizedBox(height: 22),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Image.asset(
+                        AppImages.skipPreviousIcon,
+                        height: 25,
+                        color: Colors.white,
                       ),
-                IconButton(
-                  onPressed: () {
-                    if (pageIndex != widget.model.length - 1) {
-                      controller.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.ease,
-                      );
-                      setState(() {
-                        isLoad = true;
-                      });
-                    }
-                  },
-                  icon: Image.asset(
-                    AppImages.skipNextIcon,
-                    height: 25,
-                    color: Colors.white,
-                  ),
+                      onPressed: () {
+                        if (pageIndex != 0) {
+                          controller.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.ease,
+                          );
+                          setState(() {
+                            isLoad = true;
+                          });
+                        }
+                      },
+                    ),
+                    isLoad
+                        ? const AppLoadingWidget()
+                        : GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isPlay = !isPlay;
+                                player.pause();
+                              });
+                              if (!isPlay) {
+                                player.pause();
+                              } else {
+                                player.play();
+                              }
+                            },
+                            child: isPlay
+                                ? Image.asset(
+                                    AppImages.pauseIcon,
+                                    height: 25,
+                                    color: Colors.white,
+                                  )
+                                : const Icon(
+                                    Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                    size: 40,
+                                  ),
+                          ),
+                    IconButton(
+                      onPressed: () {
+                        if (widget.model[pageIndex].premium && !byPremium) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const BottomNavigatorScreen(currindex: 3),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                return child;
+                              },
+                              transitionDuration: const Duration(
+                                seconds: 0,
+                              ),
+                            ),
+                            (route) => false,
+                          );
+                        } else if (pageIndex != widget.model.length - 1) {
+                          controller.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.ease,
+                          );
+                          setState(() {
+                            isLoad = true;
+                          });
+                        }
+                      },
+                      icon: Image.asset(
+                        AppImages.skipNextIcon,
+                        height: 25,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -172,5 +216,19 @@ class _MusicDetailPageState extends State<MusicDetailPage> {
         ],
       ),
     );
+  }
+}
+
+String formatDuration(int seconds) {
+  Duration duration = Duration(seconds: seconds);
+
+  String hours = (duration.inHours % 24).toString().padLeft(2, '0');
+  String minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+  String secondsStr = (duration.inSeconds % 60).toString().padLeft(2, '0');
+
+  if (duration.inHours > 0) {
+    return '$hours:$minutes:$secondsStr';
+  } else {
+    return '$minutes:$secondsStr';
   }
 }
