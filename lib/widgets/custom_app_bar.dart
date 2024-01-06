@@ -13,6 +13,7 @@ class CustomAppBarMeditation extends StatelessWidget
     this.iconColor,
     Key? key,
     this.titleTextStyle,
+    this.bottom,
   }) : super(key: key);
   final String? title;
   final Widget? icon;
@@ -21,6 +22,8 @@ class CustomAppBarMeditation extends StatelessWidget
   final List<Widget>? actions;
   final TextStyle? titleTextStyle;
   final Color? iconColor;
+  final PreferredSizeWidget? bottom;
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
@@ -37,6 +40,7 @@ class CustomAppBarMeditation extends StatelessWidget
       leading: icon,
       actions: actions,
       backgroundColor: AppColors.colordfe8cd,
+      bottom: bottom,
     );
   }
 }
