@@ -8,7 +8,7 @@ import 'package:meditation/core/icons/my_flutter_app_icons.dart';
 import 'package:meditation/core/premium/premium.dart';
 import 'package:meditation/features/bottom_navigator/bottom_naviator_screen.dart';
 import 'package:meditation/features/practice/data/model/practice_model.dart';
-import 'package:meditation/features/practice/presentation/child_pages/practice_detail_page.dart';
+import 'package:meditation/features/practice/presentation/child_pages/music_detail_page.dart';
 import 'package:meditation/features/practice/presentation/cubit/practice_cubit.dart';
 import 'package:meditation/features/practice/presentation/widgets/cached_image_widget.dart';
 import 'package:meditation/features/practice/presentation/widgets/font_sizer.dart';
@@ -205,11 +205,12 @@ class __GritViewItemState extends State<_GritViewItem> {
             (route) => false,
           );
         } else {
+          ////MusicDetailPage
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PracticeDetailPage(
-                initialIndex: widget.index,
+              builder: (context) => MusicDetailPage(
+                currIndex: widget.index,
                 model: widget.model,
               ),
             ),
